@@ -38,7 +38,7 @@
     shown.forEach((work,index)=>{
       const card=document.createElement('article');card.className='work-card';
       const title=escapeHTML(work.title[language]);
-      card.innerHTML=`<button class="work-open" type="button" aria-label="${l.watch}: ${title}"><img src="assets/media/${work.id}/cover.webp" alt="${l.frame} «${title}»" width="540" height="960" loading="lazy" decoding="async"><span class="play-icon" aria-hidden="true"><svg viewBox="0 0 20 24" fill="currentColor"><path d="M1 1 19 12 1 23z"/></svg></span><span class="duration">${time(work.duration)}</span></button>`;
+      card.innerHTML=`<button class="work-open" type="button" aria-label="${l.watch}: ${title}"><img src="assets/media/${work.id}/cover-720.webp" srcset="assets/media/${work.id}/cover-720.webp 720w, assets/media/${work.id}/cover.webp 1080w" sizes="(max-width:900px) 50vw, 33vw" alt="${l.frame} «${title}»" width="540" height="960" loading="lazy" decoding="async"><span class="play-icon" aria-hidden="true"><svg viewBox="0 0 20 24" fill="currentColor"><path d="M1 1 19 12 1 23z"/></svg></span><span class="duration">${time(work.duration)}</span></button>`;
       card.querySelector('button').addEventListener('click',e=>{opener=e.currentTarget;openVideo(work.id)});grid.append(card);
     });
     const more=document.querySelector('#show-more');more.hidden=visible>=selected.length;more.textContent=`${l.more} (${Math.min(9,Math.max(0,selected.length-visible))})`;
