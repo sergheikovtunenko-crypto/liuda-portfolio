@@ -25,8 +25,9 @@
   const captionTrack = player.addTextTrack('subtitles','English','en');
   captionTrack.mode='hidden';
   const labels = {uk:{filming:'Зйомка і монтаж',editing:'Монтаж',watch:'Переглянути',frame:'Кадр із відео',vertical:'Вертикальне відео · 9:16',square:'Квадратне відео · 1:1',more:'Показати ще',of:'з'},en:{filming:'Filming & editing',editing:'Editing',watch:'Watch',frame:'Frame from',vertical:'Vertical video · 9:16',square:'Square video · 1:1',more:'Show more',of:'of'}};
-  let category='filming',language='uk',visible=9,activeId='',hls=null,opener=null;
-  try { if(localStorage.getItem('liuda-language') === 'en') language='en'; } catch {}
+  let category='filming',language='en',visible=9,activeId='',hls=null,opener=null;
+  // English by default; only an explicit UA/EN click is remembered (old auto-saved key is dropped).
+  try { localStorage.removeItem('liuda-language'); if(localStorage.getItem('liuda-lang') === 'uk') language='uk'; } catch {}
   const time = seconds => `${Math.floor(Math.round(seconds)/60)}:${String(Math.round(seconds)%60).padStart(2,'0')}`;
   const list = () => category==='selected' ? works.filter(w=>w.featured) : works.filter(w=>w.category===category);
   const escapeHTML = text => text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -87,9 +88,9 @@
       }else error.hidden=false;
     }
   }
-  function changeLanguage(next) {
+  function changeLanguage(next,remember) {
     language=next; document.documentElement.lang=next;
-    try{localStorage.setItem('liuda-language',next)}catch{}
+    if(remember){try{localStorage.setItem('liuda-lang',next)}catch{}}
     document.querySelectorAll('[data-i18n]').forEach(el=>el.innerHTML=window.PORTFOLIO_TRANSLATIONS[el.dataset.i18n][next]);
     document.querySelectorAll('[data-language]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.language===next)));
     const title=next==='uk'?'Люда — відеокреаторка в Пафосі':'Liuda — Video Creator in Paphos';
@@ -106,7 +107,7 @@
   document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>switchCategory(b.dataset.category)));
   document.querySelectorAll('[data-jump-category]').forEach(b=>b.addEventListener('click',()=>switchCategory(b.dataset.jumpCategory)));
   document.querySelectorAll('[data-open-work]').forEach(b=>b.addEventListener('click',()=>{opener=b;switchCategory('selected');openVideo(b.dataset.openWork)}));
-  document.querySelectorAll('[data-language]').forEach(b=>b.addEventListener('click',()=>changeLanguage(b.dataset.language)));
+  document.querySelectorAll('[data-language]').forEach(b=>b.addEventListener('click',()=>changeLanguage(b.dataset.language,true)));
   document.querySelector('#show-more').addEventListener('click',()=>{const previous=visible;visible+=9;render();const firstNew=grid.querySelectorAll('button')[previous];if(firstNew){firstNew.focus({preventScroll:true});firstNew.scrollIntoView({block:'start',behavior:'instant'})}});
   captionButton.addEventListener('click',()=>setCaptions(captionTrack.mode!=='showing'));
   player.textTracks.addEventListener('change',()=>captionButton.setAttribute('aria-pressed',String(captionTrack.mode==='showing')));
